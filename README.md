@@ -1,2 +1,33 @@
 # Hotel-imperial-serenity
+//RESERVACION
+package com.reservaciones;
 
+import java.util.Scanner;
+
+public class Registro {
+
+public static void main(String[] args) {
+    // Objeto Scanner para la entrada de datos
+    Scanner sn = new Scanner(System.in);
+
+    System.out.println("--- 📝 BIENVENIDO AL REGISTRO ---");
+    System.out.print("Crea un nombre de usuario: ");
+    String usuario = sn.nextLine();
+
+    System.out.print("Crea una contraseña: ");
+    String password = sn.nextLine();
+
+    // Simulación de registro exitoso
+    if (!usuario.isEmpty() && !password.isEmpty()) {
+        System.out.println("\n🎉 ¡Registro completado con éxito!");
+        System.out.println("Ahora te redirigiremos al menú de reservaciones...");
+        
+        // Llama al método estático que inicia el menú
+        MenuReservaciones.iniciarMenu(); 
+    } else {
+        System.out.println("\n❌ El usuario y la contraseña no pueden estar vacíos.");
+    }
+    
+    sn.close(); // Cerrar el Scanner al finalizar el programa
+}
+}
