@@ -1,67 +1,75 @@
 package com.silverydeluxe;
-
+// Indica que esta clase pertenece al paquete del proyecto
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Hotel {
 
-    private String nombre;
-    private ArrayList<Usuario> usuarios;
-    private ArrayList<Habitacion> habitaciones;
-
-    // Constructor
+    private String nombre; // Nombre del hotel
+    private ArrayList<Usuario> usuarios; // Lista de usuarios registrados
+    private ArrayList<Habitacion> habitaciones; // Lista de habitaciones del hotel
+    // =============================================================
+    // CONSTRUCTOR: Inicializa el hotel con su nombre y sus listas
+    // =============================================================
     public Hotel(String nombre) {
         this.nombre = nombre;
         this.usuarios = new ArrayList<>();
         this.habitaciones = new ArrayList<>();
     }
 
-    // Getter del nombre
+    // Getter del nombre del hotel
     public String getNombre() {
         return nombre;
     }
-
-    // Agregar usuario
+    // =============================================================
+    // MÉTODOS PARA GESTIONAR USUARIOS
+    // =============================================================
+    // Agregar un usuario nuevo al hotel
     public void agregarUsuario(Usuario usuario) {
         usuarios.add(usuario);
         System.out.println("Usuario agregado al hotel.");
     }
 
-    // Buscar usuario por email
+    // Buscar un usuario por su email para el login
     public Usuario buscarUsuarioPorEmail(String email) {
         for (Usuario u : usuarios) {
             if (u.getEmail().equals(email)) {
-                return u;
+                return u; // Se encontró el usuario
             }
         }
-        return null;
+        return null; // No se encontró
     }
-
-    // Agregar habitación
+    // =============================================================
+    // MÉTODOS PARA GESTIONAR HABITACIONES
+    // =============================================================
+    // Agregar una nueva habitación al hotel
     public void agregarHabitacion(Habitacion habitacion) {
         habitaciones.add(habitacion);
     }
 
-    // Buscar habitación por tipo
+    // Buscar habitación por su tipo (simple, doble, suite)
     public Habitacion buscarHabitacionPorTipo(String tipo) {
         for (Habitacion h : habitaciones) {
             if (h.getTipo().equalsIgnoreCase(tipo)) {
                 return h;
             }
         }
-        return null;
+        return null; // No existe una habitación con ese tipo
     }
 
-    // Mostrar habitaciones
+    // Mostrar todas las habitaciones registradas
     public void mostrarHabitaciones() {
         System.out.println("=== Habitaciones de " + nombre + " ===");
         for (Habitacion h : habitaciones) {
             h.mostrarInfo();
         }
     }
-
+    // =============================================================
+    // MÉTODO PRINCIPAL: HACER RESERVA INTERACTIVA 
+    // =============================================================
     // Hacer reserva interactiva por rango de días con validaciones
     public void hacerReservaInteractiva(Usuario usuario) {
+        // Validar que el usuario esté logueado
         if (!usuario.isLogueado()) {
             System.out.println("Debes iniciar sesión para hacer una reserva.");
             return;
@@ -70,18 +78,23 @@ public class Hotel {
         Scanner sc = new Scanner(System.in);
         System.out.println("=== Hacer Reserva ===");
 
-        // Selección de tipo de habitación
+        // -----------------------------------------
+        // SELECCIÓN DEL TIPO DE HABITACIÓN
+        // -----------------------------------------
         Habitacion habitacion = null;
         while (habitacion == null) {
             System.out.print("Tipo de habitación (1.simple, 2.doble, 3.suite): ");
             String tipo = sc.nextLine();
+            // Buscar habitación según el tipo indicado
             habitacion = buscarHabitacionPorTipo(tipo);
             if (habitacion == null) {
                 System.out.println("Tipo inválido o no disponible. Intenta de nuevo.");
             }
         }
 
-        // Selección de mes válido
+        // -----------------------------------------
+        // SELECCIÓN DEL MES
+        // -----------------------------------------
         String mesElegido = "";
         boolean mesValido = false;
         while (!mesValido) {
@@ -102,7 +115,9 @@ public class Hotel {
             }
         }
 
-        // Mostrar días disponibles
+        // -----------------------------------------
+        // MOSTRAR DÍAS DISPONIBLES DE ESA HABITACIÓN
+        // -----------------------------------------
         ArrayList<Integer> diasLibres = habitacion.diasDisponibles(mesElegido);
         if (diasLibres.isEmpty()) {
             System.out.println("No hay días disponibles en " + mesElegido + " para esta habitación.");
@@ -110,6 +125,9 @@ public class Hotel {
         }
         System.out.println("Días disponibles en " + mesElegido + ": " + diasLibres);
 
+        // -----------------------------------------
+        // INGRESAR RANGO DE DÍAS
+        // -----------------------------------------
         // Ingreso de día de inicio y día de fin con validación
         int diaInicio = 0, diaFin = 0;
         boolean rangoValido = false;
@@ -140,14 +158,18 @@ public class Hotel {
             }
         }
 
-        // Mostrar precio total
+        // -----------------------------------------
+        // CALCULAR PRECIO TOTAL
+        // -----------------------------------------
         double total = habitacion.getPrecio() * (diaFin - diaInicio + 1);
         System.out.println("El precio total para esta reserva será: Cop_" + total);
 
-        // --- Inicio: validación de tarjeta y CVC ---
+        // -------------------------------------------------
+        // VALIDACIÓN DE TARJETA Y CVC
+        // -------------------------------------------------
         String numeroTarjeta;
         String cvc;
-
+        // Número de tarjeta (solo dígitos)
         // Pedir número de tarjeta (solo números, 13-19 dígitos)
         while (true) {
             System.out.print("Ingresa el número de tarjeta (solo dígitos): ");
@@ -174,9 +196,13 @@ public class Hotel {
         System.out.println("Datos de pago validados");
         // --- Fin: validación de tarjeta y CVC ---
 
-        // Intentar reservar
+        // -----------------------------------------
+        // INTENTAR RESERVAR
+        // -----------------------------------------
         if (habitacion.reservarRango(mesElegido, diaInicio, diaFin)) {
+            // Crear la reserva
             Reserva reserva = new Reserva(usuario, habitacion, mesElegido, diaInicio, diaFin);
+            // Guardarla en el usuario
             usuario.agregarReserva(reserva);
             System.out.println("Reserva realizada con éxito del día " + diaInicio + " al " + diaFin + " de " + mesElegido + ".");
         } else {
@@ -184,7 +210,9 @@ public class Hotel {
         }
     }
 
-    // Mostrar todas las reservas
+    // =============================================================
+    // MOSTRAR TODAS LAS RESERVAS DEL HOTEL
+    // =============================================================
     public void mostrarTodasLasReservas() {
         System.out.println("=== Todas las reservas de " + nombre + " ===");
         for (Usuario u : usuarios) {
